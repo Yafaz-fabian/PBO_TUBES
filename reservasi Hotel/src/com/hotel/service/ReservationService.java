@@ -9,7 +9,7 @@ public class ReservationService {
     private List<Reservation> reservations;
 
     public ReservationService() {
-        this.reservations = new ArrayList<>();
+        reservations = new ArrayList<>();
     }
 
     public void addReservation(Reservation reservation) {
@@ -17,13 +17,12 @@ public class ReservationService {
         System.out.println("Reservation added: " + reservation);
     }
 
+    public List<Reservation> getAllReservations() {
+        return reservations;
+    }
+
     public void listReservations() {
         System.out.println("List of Reservations:");
         reservations.forEach(System.out::println);
-    }
-
-    public void removeReservation(Reservation reservation) {
-        reservations.remove(reservation);
-        System.out.println("Reservation removed: " + reservation);
     }
 }
