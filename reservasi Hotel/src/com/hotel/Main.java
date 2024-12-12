@@ -14,13 +14,107 @@ public class Main {
     private static ReservationService reservationService = new ReservationService();
 
     public static void main(String[] args) {
-
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        JFrame selectionFrame = new JFrame("Hotel Reservation System");
+        selectionFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        selectionFrame.setSize(400, 300);
+        selectionFrame.setLocationRelativeTo(null);
+
+        JPanel selectionPanel = new JPanel();
+        selectionPanel.setLayout(new BoxLayout(selectionPanel, BoxLayout.Y_AXIS));
+        selectionPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
+        selectionPanel.setBackground(new Color(240, 240, 245));
+
+        JLabel welcomeLabel = new JLabel("Welcome to Hotel Reservation System");
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton guestButton = new JButton("Guest Reservation");
+        guestButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        guestButton.setMaximumSize(new Dimension(200, 40));
+        guestButton.setBackground(new Color(70, 130, 180));
+        guestButton.setForeground(Color.WHITE);
+
+        JButton adminButton = new JButton("Admin Panel");
+        adminButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        adminButton.setMaximumSize(new Dimension(200, 40));
+        adminButton.setBackground(new Color(180, 70, 70));
+        adminButton.setForeground(Color.WHITE);
+
+        selectionPanel.add(Box.createVerticalGlue());
+        selectionPanel.add(welcomeLabel);
+        selectionPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        selectionPanel.add(guestButton);
+        selectionPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        selectionPanel.add(adminButton);
+        selectionPanel.add(Box.createVerticalGlue());
+
+        selectionFrame.add(selectionPanel);
+        selectionFrame.setVisible(true);
+
+        guestButton.addActionListener(e -> {
+            selectionFrame.setVisible(false);
+            showReservationSystem();
+        });
+
+        // Admin Button  
+        adminButton.addActionListener(e -> {
+            String password = JOptionPane.showInputDialog(selectionFrame, 
+                "Enter admin password:", 
+                "Admin Login", 
+                JOptionPane.PLAIN_MESSAGE);
+            
+            if (password != null && password.equals("admin123")) {
+                selectionFrame.setVisible(false);
+                showAdminPanel();
+            } else if (password != null) {
+                JOptionPane.showMessageDialog(selectionFrame,
+                    "Invalid password!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
+    private static void showAdminPanel() {
+        JFrame adminFrame = new JFrame("Admin Panel");
+        adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        adminFrame.setSize(600, 500);
+        
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainPanel.setBackground(new Color(240, 240, 245));
+
+        JTextArea reservationList = new JTextArea(20, 40);
+        reservationList.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(reservationList);
+
+        JButton refreshButton = new JButton("Refresh List");
+        refreshButton.setBackground(new Color(70, 130, 180));
+        refreshButton.setForeground(Color.WHITE);
+
+        refreshButton.addActionListener(e -> {
+            reservationList.setText("");
+            for (Reservation r : reservationService.getAllReservations()) {
+                reservationList.append(r.toString() + "\n");
+            }
+        });
+
+        mainPanel.add(new JLabel("All Reservations"), BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(refreshButton, BorderLayout.SOUTH);
+
+        adminFrame.add(mainPanel);
+        adminFrame.setLocationRelativeTo(null);
+        adminFrame.setVisible(true);
+    }
+
+    private static void showReservationSystem() {
         JFrame frame = new JFrame("Sistem Reservasi Hotel");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 500);
@@ -29,13 +123,11 @@ public class Main {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(new Color(240, 240, 245));
 
-
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(new Color(240, 240, 245));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
-
 
         JLabel titleLabel = new JLabel("Form Reservasi Hotel");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -49,7 +141,7 @@ public class Main {
         JComboBox<String> roomTypeComboBox = new JComboBox<>(roomTypes);
         roomTypeComboBox.setBackground(Color.WHITE);
         
-        // Menambahkan label untuk menampilkan harga kamar
+        //label untuk menampilkan harga kamar
         JLabel priceLabel = new JLabel("Harga: Rp 200.000/malam");
         priceLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         
@@ -89,7 +181,7 @@ public class Main {
         addFormRow(formPanel, "Nomor Kontak:", contactField, gbc, 2);
         addFormRow(formPanel, "Tipe Kamar:", roomTypeComboBox, gbc, 3);
         
-        // Menambahkan label harga
+        //label harga
         gbc.gridx = 1;
         gbc.gridy = 4;
         formPanel.add(priceLabel, gbc);
