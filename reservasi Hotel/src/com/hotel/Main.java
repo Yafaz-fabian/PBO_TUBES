@@ -13,7 +13,7 @@ public class Main {
     private static ReservationService reservationService = new ReservationService();
 
     public static void main(String[] args) {
-        // Set Look and Feel to system default
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -28,14 +28,14 @@ public class Main {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(new Color(240, 240, 245));
 
-        // Form panel
+
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(new Color(240, 240, 245));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Styling komponen
+
         JLabel titleLabel = new JLabel("Form Reservasi Hotel");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setForeground(new Color(50, 50, 50));
@@ -48,46 +48,123 @@ public class Main {
         JComboBox<String> roomTypeComboBox = new JComboBox<>(roomTypes);
         roomTypeComboBox.setBackground(Color.WHITE);
         
+        // Menambahkan label untuk menampilkan harga kamar
+        JLabel priceLabel = new JLabel("Harga: Rp 200.000/malam");
+        priceLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        
+        // Update harga saat tipe kamar berubah
+        roomTypeComboBox.addActionListener(e -> {
+            String selectedType = (String) roomTypeComboBox.getSelectedItem();
+            switch (selectedType) {
+                case "Single":
+                    priceLabel.setText("Harga: Rp 200.000/malam");
+                    break;
+                case "Double":
+                    priceLabel.setText("Harga: Rp 400.000/malam");
+                    break;
+                case "Suite":
+                    priceLabel.setText("Harga: Rp 800.000/malam");
+                    break;
+            }
+        });
+        
         JButton submitButton = new JButton("Reservasi");
         submitButton.setBackground(new Color(70, 130, 180));
         submitButton.setForeground(Color.WHITE);
         submitButton.setFocusPainted(false);
         
-        // Hasil area
+
         JTextArea resultArea = new JTextArea(8, 30);
         resultArea.setEditable(false);
         resultArea.setFont(new Font("Arial", Font.PLAIN, 12));
         JScrollPane scrollPane = new JScrollPane(resultArea);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
 
-        // Layout komponen
+
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         formPanel.add(titleLabel, gbc);
 
         addFormRow(formPanel, "Nama Tamu:", nameField, gbc, 1);
         addFormRow(formPanel, "Nomor Kontak:", contactField, gbc, 2);
         addFormRow(formPanel, "Tipe Kamar:", roomTypeComboBox, gbc, 3);
-        addFormRow(formPanel, "Jumlah Malam:", nightsField, gbc, 4);
+        
+        // Menambahkan label harga
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        formPanel.add(priceLabel, gbc);
+        
+        addFormRow(formPanel, "Jumlah Malam:", nightsField, gbc, 5);
 
-        gbc.gridy = 5;
+
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchPanel.setBackground(new Color(240, 240, 245));
+        JTextField searchField = createStyledTextField();
+        JButton searchButton = new JButton("Cari");
+        searchButton.setBackground(new Color(70, 130, 180));
+        searchButton.setForeground(Color.WHITE);
+        
+        searchPanel.add(new JLabel("Cari Reservasi:"));
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+
+
+        JButton clearButton = new JButton("Reset");
+        clearButton.setBackground(new Color(180, 70, 70));
+        clearButton.setForeground(Color.WHITE);
+        clearButton.setFocusPainted(false);
+
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        buttonPanel.setBackground(new Color(240, 240, 245));
+        buttonPanel.add(submitButton);
+        buttonPanel.add(clearButton);
+
+        gbc.gridy = 6;
         gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        formPanel.add(submitButton, gbc);
+        formPanel.add(buttonPanel, gbc);
 
-        // Add panels to main panel
+
         mainPanel.add(formPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(searchPanel, BorderLayout.CENTER);
+        mainPanel.add(scrollPane, BorderLayout.SOUTH);
 
-        // Event untuk tombol reservasi
+
+        clearButton.addActionListener(e -> {
+            nameField.setText("");
+            contactField.setText("");
+            nightsField.setText("");
+            roomTypeComboBox.setSelectedIndex(0);
+        });
+
+
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = nameField.getText();
-                String contact = contactField.getText();
+                String name = nameField.getText().trim();
+                String contact = contactField.getText().trim();
+                
+
+                if (name.isEmpty() || contact.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Nama dan nomor kontak harus diisi!", 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+
+                if (!contact.matches("\\d+")) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Nomor kontak hanya boleh berisi angka!", 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 String roomType = (String) roomTypeComboBox.getSelectedItem();
                 int nights;
 
-                // Validasi input
+
                 try {
                     nights = Integer.parseInt(nightsField.getText());
                     if (nights <= 0) throw new NumberFormatException();
@@ -96,7 +173,7 @@ public class Main {
                     return;
                 }
 
-                // Menentukan harga berdasarkan tipe kamar
+                // Menentukan harga tp kamar htl
                 double pricePerNight;
                 switch (roomType) {
                     case "Single":
@@ -109,27 +186,40 @@ public class Main {
                         pricePerNight = 800000;
                         break;
                     default:
-                        pricePerNight = 0; // Handle unexpected room type
+                        pricePerNight = 0; 
                         JOptionPane.showMessageDialog(frame, "Tipe kamar tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                 }
 
-                // Membuat reservasi
+                // Membuat reservasi htl
                 Guest guest = new Guest(name, contact);
                 Room room = new Room(roomType, roomType, pricePerNight);
                 Reservation reservation = new Reservation(guest, room, nights);
                 reservationService.addReservation(reservation);
 
-                // Tampilkan hasil di area teks
+
                 resultArea.setText("");
                 for (Reservation r : reservationService.getAllReservations()) {
                     resultArea.append(r.toString() + "\n");
                 }
 
-                // Bersihkan input
+
                 nameField.setText("");
                 contactField.setText("");
                 nightsField.setText("");
+            }
+        });
+
+
+        searchButton.addActionListener(e -> {
+            String searchTerm = searchField.getText().trim().toLowerCase();
+            resultArea.setText("");
+            for (Reservation r : reservationService.getAllReservations()) {
+                if (r.getGuest().getName().toLowerCase().contains(searchTerm) ||
+                    r.getGuest().getContactNumber().contains(searchTerm) ||
+                    r.getRoom().getRoomType().toLowerCase().contains(searchTerm)) {
+                    resultArea.append(r.toString() + "\n");
+                }
             }
         });
 
