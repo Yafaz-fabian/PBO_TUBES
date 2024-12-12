@@ -4,11 +4,10 @@ import com.hotel.model.Guest;
 import com.hotel.model.Reservation;
 import com.hotel.model.Room;
 import com.hotel.service.ReservationService;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.*;
 
 public class Main {
     private static ReservationService reservationService = new ReservationService();
