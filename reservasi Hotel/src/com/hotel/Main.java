@@ -37,15 +37,14 @@ public class Main {
         guestButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         guestButton.setMaximumSize(new Dimension(200, 40));
         guestButton.setBackground(new Color(70, 130, 180));
-        guestButton.setForeground(Color.WHITE);
+        guestButton.setForeground(Color.BLACK);
 
         JButton adminButton = new JButton("Admin Panel");
         adminButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         adminButton.setMaximumSize(new Dimension(200, 40));
         adminButton.setBackground(new Color(180, 70, 70));
-        adminButton.setForeground(Color.WHITE);
+        adminButton.setForeground(Color.black);
 
-        selectionPanel.add(Box.createVerticalGlue());
         selectionPanel.add(welcomeLabel);
         selectionPanel.add(Box.createRigidArea(new Dimension(0, 30)));
         selectionPanel.add(guestButton);
@@ -61,17 +60,16 @@ public class Main {
             showReservationSystem();
         });
 
-        // Admin Button  
         adminButton.addActionListener(e -> {
+            // Simple password check for admin
             String password = JOptionPane.showInputDialog(selectionFrame, 
                 "Enter admin password:", 
-                "Admin Login", 
+                "Admin Authentication", 
                 JOptionPane.PLAIN_MESSAGE);
-            
             if (password != null && password.equals("admin123")) {
                 selectionFrame.setVisible(false);
                 showAdminPanel();
-            } else if (password != null) {
+            } else {
                 JOptionPane.showMessageDialog(selectionFrame,
                     "Invalid password!",
                     "Error",
@@ -93,9 +91,16 @@ public class Main {
         reservationList.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(reservationList);
 
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.setBackground(new Color(240, 240, 245));
+
         JButton refreshButton = new JButton("Refresh List");
         refreshButton.setBackground(new Color(70, 130, 180));
-        refreshButton.setForeground(Color.WHITE);
+        refreshButton.setForeground(Color.black);
+
+        JButton backButton = new JButton("Back to Main Menu");
+        backButton.setBackground(new Color(180, 70, 70));
+        backButton.setForeground(Color.black);
 
         refreshButton.addActionListener(e -> {
             reservationList.setText("");
@@ -104,13 +109,24 @@ public class Main {
             }
         });
 
+        backButton.addActionListener(e -> {
+            adminFrame.dispose();
+            main(new String[]{});
+        });
+
+        buttonPanel.add(refreshButton);
+        buttonPanel.add(backButton);
+
         mainPanel.add(new JLabel("All Reservations"), BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.add(refreshButton, BorderLayout.SOUTH);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         adminFrame.add(mainPanel);
         adminFrame.setLocationRelativeTo(null);
         adminFrame.setVisible(true);
+
+        // Automatically load reservations when panel opens
+        refreshButton.doClick();
     }
 
     private static void showReservationSystem() {
@@ -138,7 +154,7 @@ public class Main {
 
         String[] roomTypes = {"Single", "Double", "Suite"};
         JComboBox<String> roomTypeComboBox = new JComboBox<>(roomTypes);
-        roomTypeComboBox.setBackground(Color.WHITE);
+        roomTypeComboBox.setBackground(Color.black);
         
         //label untuk menampilkan harga kamar
         JLabel priceLabel = new JLabel("Harga: Rp 200.000/malam");
@@ -162,7 +178,7 @@ public class Main {
         
         JButton submitButton = new JButton("Reservasi");
         submitButton.setBackground(new Color(70, 130, 180));
-        submitButton.setForeground(Color.WHITE);
+        submitButton.setForeground(Color.black);
         submitButton.setFocusPainted(false);
         
 
@@ -193,7 +209,7 @@ public class Main {
         JTextField searchField = createStyledTextField();
         JButton searchButton = new JButton("Cari");
         searchButton.setBackground(new Color(70, 130, 180));
-        searchButton.setForeground(Color.WHITE);
+        searchButton.setForeground(Color.black);
         
         searchPanel.add(new JLabel("Cari Reservasi:"));
         searchPanel.add(searchField);
@@ -202,14 +218,19 @@ public class Main {
 
         JButton clearButton = new JButton("Reset");
         clearButton.setBackground(new Color(180, 70, 70));
-        clearButton.setForeground(Color.WHITE);
+        clearButton.setForeground(Color.black);
         clearButton.setFocusPainted(false);
 
+        JButton backButton = new JButton("Back to Main Menu");
+        backButton.setBackground(new Color(100, 100, 100));
+        backButton.setForeground(Color.black);
+        backButton.setFocusPainted(false);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         buttonPanel.setBackground(new Color(240, 240, 245));
         buttonPanel.add(submitButton);
         buttonPanel.add(clearButton);
+        buttonPanel.add(backButton);
 
         gbc.gridy = 6;
         gbc.gridwidth = 2;
@@ -228,6 +249,10 @@ public class Main {
             roomTypeComboBox.setSelectedIndex(0);
         });
 
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            main(new String[]{});
+        });
 
         submitButton.addActionListener(new ActionListener() {
             @Override
